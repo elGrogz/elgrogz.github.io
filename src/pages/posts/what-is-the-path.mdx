@@ -1,0 +1,41 @@
+---
+title: What is the $PATH?
+description: "A basic intro to the $PATH on Mac and Linux systems"
+pubDate: August 06, 2021
+---
+
+import BlogImage from "@components/BlogImage.astro";
+import Path1 from "@images/path/path-1.png";
+import Path2 from "@images/path/path-2.png";
+import Path3 from "@images/path/path-3.png";
+import Path4 from "@images/path/path-4.png";
+import Path5 from "@images/path/path-5.png";
+import Path6 from "@images/path/path-6.png";
+
+When working with the command line, the 'PATH' is one of these things that you see everywhere in Stack Overflow, coding tutorials and documentation for packages, libraries, etc... but it's rare to see an explaination of what it actually is. It turns out that it's fairly simple to understand, and knowing a little bit about it will demystify what all these rockstar coders on Stack Overflow are on about. For an amazing breakdown of it, look [here](https://medium.com/@jalendport/what-exactly-is-your-shell-path-2f076f02deb4), but the following is a quick TL;DR.
+
+Essentially the PATH is a variable that tells your computer where to look when executing a programme. When you try to run a programme, like `uptime` or `node`, your computer will look for any executable file of that name in it's PATH. Sometimes you might see the following when trying to run something, for example the Android `emulator` tool:
+
+<BlogImage src={Path1} alt="Emulator executable not found" />
+
+This means the executable (basically the file that starts the programme you want) can't be found, despite in this case the Android tool being available here:
+
+<BlogImage src={Path2} alt="Emulator available in folder" />
+
+We can see why the `emulator` command isn't running by typing `echo $PATH`:
+
+<BlogImage src={Path3} alt="Result of 'echo $PATH'" />
+
+Here we have a list of directories separated by a `:`. These directories are currently what the command line will look through when we try to run any command. Since the Android Emulator's directory isn't present, it won't be run we try to run the `emulator` command. To fix this, we need to add a special line in our shell profile file. For most people using a Mac, this will be the `~/.bashrc` file for Bash users or the `~/.zshrc` file for ZSH users. Open up this file in a text editor and add the following line:
+
+`export PATH=$PATH:~/Library/Android/sdk/emulator/`
+
+<BlogImage src={Path4} alt="Add export $PATH in shell file" />
+
+Now when we try to run an `emulator` command, for example `emulator -version` we get a successful result!
+
+<BlogImage src={Path5} alt="Successful result of emulator command" />
+
+And if we take a look at `echo $PATH`, we can see the emulator directory has been added and is available to the command line to access:
+
+<BlogImage src={Path6} alt="Emulator folder available in $PATH" />

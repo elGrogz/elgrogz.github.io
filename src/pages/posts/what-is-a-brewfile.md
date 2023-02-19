@@ -1,0 +1,38 @@
++++
+title = "What is a Brewfile?"
+description = ""
+tags = [
+"Homebrew",
+"MacOS"
+]
+date = 2021-01-18
+author = "Gregor Gilchrist"
++++
+
+Homebrew is essentially a package manager for programs running on Mac OS. Think of it as the app store but you download everything from your command line.  
+
+A Brewfile is a script that lists a project's 'dependencies' (or programs/tools it needs to run) to be downloaded from Homebrew.  
+
+To use it, simply add a `Brewfile` in the root directory of your project, include the brew packages you want to install, and run `brew bundle` in a terminal in that directory. It will then go through all the `brew` commands and run each one.  
+
+For example, say I have a `Brewfile` with the following contents:
+
+```bash
+#install git
+brew "git"
+
+#install nvm
+brew "nvm"
+
+# gets cask fonts repo and installs font-menlo-for-powerline font
+tap "homebrew/cask-fonts"
+cask "font-menlo-for-powerline"
+```
+
+When we run `brew bundle`:
+
+- The lines with a `#` are comments and are skipped.
+- The lines with `brew` are downloaded and installed. In this case we install Git and NVM.
+- The line with `tap` makes a clone of the `homebrew/cask-fonts` repo, and allows you to get certain fonts with `cask <font>`  
+
+Once these bundles have installed, they are ready for use in your project.

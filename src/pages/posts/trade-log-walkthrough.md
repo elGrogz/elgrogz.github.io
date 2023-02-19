@@ -1,0 +1,191 @@
++++
+title = "Creating a Google Sheets Crypto trade log (with live prices)"
+description = ""
+tags = [
+"Crypto",
+"Javascript",
+"API"
+]
+date = 2021-03-17
+author = "Gregor Gilchrist"
++++
+
+For better or for worse, I dabble in Cryptocurrency and have invested small amounts in Bitcoin since the bubble of 2017. Since it's still an opaque space and tricky to get your money out, I've left all of my crypto as is since then. Now that we've entered another bullish phase, I wanted a way to track how my investments have done. To do this I went through all my purchases through Coinbase and added them to a Google Sheet, with the date purchased, amount of GBP I spent and amount of Bitcoin (or other cryptocurrency) I bought. This was a bit of a humbling experience, as all of my trades were laid bare before me and I could see how I often sold at the bottom and bought at the top. If I'd just held my bitcoin without trading I would have quite a bit more in my crypto stash.  
+Anyway, I wanted a way to track my portfolio performance in real time. To do this I set out to get live price data from external APIs that would would give me live price data, and use that to update my Google Spreadsheet with my historical purchases. Here's how I did it.
+
+---
+
+### Step One - Setup the API key
+
+I decided to use [CoinMarketCap's API](https://coinmarketcap.com/api/documentation/v1/), since it is my go-to source for current prices. It's pretty simple to get setup. Just:
+
+- Sign up for a free account (just select the Basic plan, it has everything we want). You can then copy your account API key from the Developer Dashboard.
+
+![](/post/images//trades-post/trade-coinmarketcap-api.png)
+
+Be aware that you will have a limited amount of API calls since you are on the basic version, but we shouldn't be breaching that limit with what we're doing.
+
+### Step Two - Decide what API endpoints to use
+
+Let's take a look at the data available to us via the API endpoints:
+
+![](/post/images//trades-post/trade-coinmarketcap-docs.png)
+
+For our purposes we are looking for the latest crypto prices per coin. These one looks good. We can confirm this in the section for that endpoint:
+
+![](/post/images//trades-post/trade-crypto-latest-endpoint.png)
+
+This shows us that for Basic users we will get an array with the all the main data for each cryptocurrency embedded in a JSON object, including:
+
+- The name
+- The current price
+
+### Step Three - Get live data using Script Editor
+
+Let's move to Google Sheets and start making calls to the API. To do this we will use the Script Editor, under `Extensions` > `Apps Script`
+
+This will open the Apps Script page. Functions are created using normal javascript.
+
+![](/post/images//trades-post/trade-apps-script.png)
+
+The first step is to call the `cryptocurrency/listings/latest` endpoint which will give us all cryptocurrency data. My function looks like this:
+
+```js
+function getCoinInfo(coinName) {
+  var options = {
+    method: "get",
+    contentType: "application/json",
+    headers: { "X-CMC_PRO_API_KEY": "<API DEVELOPER GOES HERE>" },
+  };
+
+  var response = UrlFetchApp.fetch(
+    "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
+    options
+  );
+  var data = JSON.parse(response.getContentText());
+
+  var coinInfo;
+  for (var i = 0; i < data.data.length; i++) {
+    if (data.data[i].name == coinName) {
+      coinInfo = data.data[i];
+      break;
+    }
+  }
+
+  return coinInfo;
+}
+```
+
+It's doing the following:
+
+- Setting up the request type, content type and headers for the request in `options`.
+- Making the call using [`UrlFetchApp.fetch(URL, options)`](https://developers.google.com/apps-script/reference/url-fetch).
+- Parse the response into the `data` variable.
+- Loop through each element of `data` (each corresponding to a cryptocurrency).
+- If the object's name matches the name that we pass in to search, give us that object back and exit out of the function.
+
+The script editor allows us to debug and check responses by adding a `Logger.log()` in the method. To test the method:
+
+- Select the method to call, in this case `callAtomPrice` (explained below)
+- Click 'Run'
+- See the execution log shows the response, including the key bit of info we are interested in - the price. This is under `quote.USD.price`.
+
+![](/post/images//trades-post/trade-apps-scripts-debug.png)
+
+### Step Four - Split out calls per Cryptocurrency
+
+To make this call reusable, I made this main API call reusable by passing in a string with the Coin name. I split out these coins as follows:
+
+```js
+function callBtcPrice() {
+  coinInfo = getCoinInfo("Bitcoin")
+  focusOnSheet(coinInfo, 0)
+}
+
+function callEthPrice() {
+  coinInfo = getCoinInfo("Ethereum")
+  focusOnSheet(coinInfo, 1)
+}
+
+...
+
+function callAtomPrice() {
+  coinInfo = getCoinInfo("Cosmos")
+  focusOnSheet(coinInfo, 3)
+}
+```
+
+### Step Five - Add function to populate cells in the sheet
+
+Now that we have the data per coin via the API call, we can populate specific cells with data.
+
+```js
+function focusOnSheet(coinInfo, sheetNumber) {
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  sheet = SpreadsheetApp.setActiveSheet(spreadsheet.getSheets()[sheetNumber]);
+
+  sheet.getRange(1, 7).setValue(rate);
+  sheet.getRange(2, 7).setValue(coinInfo.quote.USD.price);
+  sheet.getRange(5, 7).setValue(coinInfo.quote.USD.percent_change_7d);
+  sheet.getRange(6, 7).setValue(coinInfo.quote.USD.percent_change_24h);
+}
+```
+
+- The first line gets the entire spreadsheet.
+- The second line sets the specific sheet (I have one per coin). This changes the UI to that number of sheet.
+- Using `getRange(x, y)` we select that cell, and then populate it with the data passed in from the API call using `setValue`.
+
+### Step Six - Setup menu in the Spreadsheet.
+
+The following method will add a menu to the Spreadsheet that allows us to get the latest price data and focus on that coin's spread sheet:
+
+```js
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+
+  ui.createMenu("Update Latest Crypto Price")
+    .addItem("BTC", "callBtcPrice")
+    .addItem("ETH", "callEthPrice")
+    .addItem("ATOM", "callAtomPrice")
+    .addToUi();
+}
+```
+
+- `onOpen()` is a method that is run at when you open the Spreadsheet.
+- We get the UI using `SpreadsheetApp.getUI()`
+- We create a menu using `.createMenu('menu name')`.
+- Then we add an item for each coin. The item will call the specific method. We do this with `addItem('coin name', 'functionToCall')`
+- Finally we call `addToUi()`
+
+### (Optional) Step Seven - Add some currency conversion
+
+To convert from the base currency of USD to GBP, I signed up to the API at [exchangeratesapi.io](https://exchangeratesapi.io/) and used the `latest` endpoint. It's a similar process to the Coinmarketcap API, and the code looks like this:
+
+```js
+function focusOnSheet(coinInfo, sheetNumber) {
+  var rate = getGbpExchangeRate();
+
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  sheet = SpreadsheetApp.setActiveSheet(spreadsheet.getSheets()[sheetNumber]);
+
+  sheet.getRange(1, 7).setValue(rate);
+  sheet.getRange(2, 7).setValue(coinInfo.quote.USD.price);
+  sheet.getRange(5, 7).setValue(coinInfo.quote.USD.percent_change_7d);
+  sheet.getRange(6, 7).setValue(coinInfo.quote.USD.percent_change_24h);
+}
+
+function getGbpExchangeRate() {
+  var response = UrlFetchApp.fetch(
+    "http://api.exchangeratesapi.io/v1/latest?access_key=<KEY GOES HERE>symbols=GBP,EUR"
+  );
+  var data = JSON.parse(response.getContentText());
+  console.log(response);
+  return data.rates.GBP;
+}
+```
+
+### Step Eight - Give it a try!
+
+I added a bit of colour and now it's ready to go. In the spreadsheet, you will now see a menu when you reload, and the cells we specify in `.focusOnSheet()` will be populated. Then we can do whatever we want with this data!
+
+![](/post/images//trades-post/trade-atom-page.png)

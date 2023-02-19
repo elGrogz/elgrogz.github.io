@@ -1,0 +1,141 @@
++++
+title = "Testing HTTP responses for Ruby with VCR Record and Playback"
+description = ""
+tags = [
+"Testing",
+"Ruby"
+]
+date = 2021-04-17
+author = "Gregor Gilchrist"
++++
+
+Imagine we are creating an app or webpage to show some random advice to the user. Luckily there's a publically available API called [Advice Slip](https://api.adviceslip.com/) for just such a thing!
+
+How might we want to implement and test the request to get this data? Let's implement this really quickly in a simple file with a client class and a describe block for the tests (I ran this in blank Rails app with `rspec-rails` and `faraday` for the HTTP client installed).
+
+```ruby
+require 'faraday'
+require 'json'
+
+class AdviceClient
+    def get_advice_data
+        response = Faraday.get("https://api.adviceslip.com/advice")
+        response
+    end
+
+    def get_advice_string(advice_data)
+        advice_body = JSON.parse(advice_data)
+        advice_body["slip"]["advice"]
+    end
+end
+
+describe AdviceClient do
+    let(:adviceClient) { adviceClient = AdviceClient.new }
+
+    it "can successfully get advice" do
+        response = adviceClient.get_advice_data
+        expect(response.status).to eq(200)
+    end  
+end
+```
+
+The client hits the random advice endpoint with `get_advice_data`. We then parse the response body with `get_advice_string` which looks like this:
+
+```json
+{"slip": { "id": 193, "advice": "Value the people in your life."}}
+```
+
+We run the tests (using `bundle exec rspec <test file here>`) and simply test that we get a 200 HTTP response code from the server. Success!
+
+Let's add a test to check the parsing now:
+
+```ruby
+    it "can get the advice from the response" do
+        response = adviceClient.get_advice_data
+        advice = adviceClient.get_advice_string(response.body)
+        expect(advice).to eq("blah")
+    end  
+```
+
+However there are issues with this. These tests are hitting an external endpoint over the internet. What if it isn't available when we run our tests? We'll get a failing test through no fault in our code. Not good at all. Also since it is a random bit of advice each time, the string we verify against would change from test to test (testing "blah" won't do!)
+
+For this situation we can use [VCR](https://github.com/vcr/vcr), a ruby gem that records an initial HTTP request, and allows our subsequent tests to use this recorded request to test our code. To use VCR:
+
+- Include `gem vcr` in the `test` group in your `Gemfile`
+- Include a config section, either in this test or in its own file that we can require in the test file. For now we will include it in original file as:
+
+```ruby
+VCR.configure do |config|
+    config.cassette_library_dir = "fixtures/vcr_cassettes"
+    config.hook_into :webmock
+    config.allow_http_connections_when_no_cassette = true
+end
+```
+
+- This is telling VCR where to store the mocked request (a 'cassette'), what to use for its mocks (make sure to include webmock in your gemfile) and to allow HTTP connections to continue if we don't specify VCR to be used for that test.
+- WE then tell the test to use VCR:
+
+```ruby
+    it "can get the advice from the response" do
+        VCR.use_cassette("advice_cassette") do
+            response = adviceClient.get_advice_data
+            advice = adviceClient.get_advice_string(response.body)
+            expect(advice).to eq("blah")
+        end
+    end  
+```
+
+- If this is the first time the `advice cassette` is used, it will create it with data from the actual request and any future requests will use that mocked data. We can now change the assertion string since it will be the same each time:
+
+```ruby
+    it "can get the advice from the response" do
+        VCR.use_cassette("advice_cassette") do
+            response = adviceClient.get_advice_data
+            advice = adviceClient.get_advice_string(response.body)
+            expect(advice).to eq("If you need cheering up, try searching online for photos of kittens.")
+        end
+    end  
+```
+
+So now we have fast running, non-flaky tests that don't do any actual calls to an external service, but they still verify we our code is working as expected!
+
+*Note* - The final file looks like this - I've not updated the original `200` test with VCR since I'm lazy :)
+
+```ruby
+require 'faraday'
+require 'json'
+require 'vcr'
+
+VCR.configure do |config|
+    config.cassette_library_dir = "fixtures/vcr_cassettes"
+    config.hook_into :webmock
+    config.allow_http_connections_when_no_cassette = true
+end
+
+class AdviceClient
+    def get_advice_data
+        return Faraday.get("https://api.adviceslip.com/advice")
+    end
+
+    def get_advice_string(advice_data)
+        advice_body = JSON.parse(advice_data)
+        advice_body["slip"]["advice"]
+    end
+end
+
+describe AdviceClient do
+    let(:adviceClient) { adviceClient = AdviceClient.new }
+    it "can successfully get advice" do
+        response = adviceClient.get_advice_data
+        expect(response.status).to eq(200)
+    end  
+
+    it "can get the advice from the response" do
+        VCR.use_cassette("advice_cassette") do
+            response = adviceClient.get_advice_data
+            advice = adviceClient.get_advice_string(response.body)
+            expect(advice).to eq("If you need cheering up, try searching online for photos of kittens.")
+        end
+    end  
+end
+```
