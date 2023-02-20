@@ -26,7 +26,7 @@ blogs = blogs.sort((a, b) => new Date(b.frontmatter.pubDate).valueOf() - new Dat
     </div>
     <header class="max-w-xl sm:order-first">
       <h1 class="text-2xl sm:text-3xl font-bold mb-7 md:mb-5 text-center sm:text-left">Welcome to Grogz's blog</h1>
-      <p class="text-black dark:text-zinc-300 mb-5">My name's Gregor Gilchrist and I'm a professional tester/amateur developer working in Paris. Here's some of my randon thoughts and list of projects I've worked on.</p>
+      <p class="text-black dark:text-zinc-300 mb-5">My name's Gregor Gilchrist and I'm a tester and developer working in Paris</p>
       <!-- <p class="text-black dark:text-zinc-300">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto, debitis minima! Illo esse quod enim id deleniti, veritatis magnam dolorum non accusantium quam et nemo dolorem
         aspernatur eligendi quidem est.
@@ -35,7 +35,7 @@ blogs = blogs.sort((a, b) => new Date(b.frontmatter.pubDate).valueOf() - new Dat
   </section>
   <section class="py-14">
     <h1 class="text-2xl sm:text-3xl font-bold mb-5">Recent Posts</h1>
-    <p class="text-black dark:text-zinc-300 mb-2">Looking for all of my blog posts? Click the "posts" or the "Show more posts" link down below.</p>
+    <!-- <p class="text-black dark:text-zinc-300 mb-2">Looking for all of my blog posts? Click the "posts" or the "Show more posts" link down below.</p> -->
     <ul class="flex flex-col justify-center py-5">
       {
         blogs.length > 1 &&
