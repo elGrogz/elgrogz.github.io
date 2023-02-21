@@ -1,16 +1,11 @@
-+++
-title = "How to automatically tweet a new article with IFTTT: Part 2"
-description = ""
-tags = [
-"Automation",
-"IFTTT",
-"Blog",
-"Twitter"
-]
-date = 2022-01-31
-author = "Gregor Gilchrist"
-featured_image = "https://grogz.blog/images/grogz-logo.png"
-+++
+---
+title: How to automatically tweet a new article with IFTTT - Part 2
+description: "How to automatically tweet a new article with IFTTT - Part 2"
+pubDate: January 31, 2022
+---
+
+import TweetOne from "@images/twitter-ifttt/tweet-1.png";
+import TweetTwo from "@images/twitter-ifttt/twitter-image-2.png";
 
 So it turns out I messed up the IFTTT step a bit in my [previous](https://grogz.blog/using-ifttt-to-post-on-twitter/) post.
 
@@ -18,10 +13,14 @@ The action took longer than expected to trigger and I was worried that it had fa
 
 However, it wasn't quite right....
 
-{{< figure src="/post/images/twitter-ifttt/tweet-1.png" height="400px" >}}
+{/* {{< figure src="/post/images/twitter-ifttt/tweet-1.png" height="400px" >}} */}
+
+<BlogImage src={TweetOne} alt="Twitter One" />
 
 So I've done the following: changed the variable from the featured image one (maybe featured images don't work the way I thought with Hugo blogs) to hardcoded address where my logo is.
 
-{{< figure src="/post/images/twitter-ifttt/twitter-image-2.png" height="400px" >}}
+{/* {{< figure src="/post/images/twitter-ifttt/twitter-image-2.png" height="400px" >}} */}
+
+<BlogImage src={TweetTwo} alt="Twitter Two" />
 
 Hopefully it will work!

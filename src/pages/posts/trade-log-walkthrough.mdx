@@ -23,8 +23,6 @@ I decided to use [CoinMarketCap's API](https://coinmarketcap.com/api/documentati
 
 - Sign up for a free account (just select the Basic plan, it has everything we want). You can then copy your account API key from the Developer Dashboard.
 
-{/* ![](/post/images//trades-post/trade-coinmarketcap-api.png) */}
-
 <BlogImage src={TradeCoinmarketcapAPI} alt="Trade Coinmarketcap API" />
 
 Be aware that you will have a limited amount of API calls since you are on the basic version, but we shouldn't be breaching that limit with what we're doing.
@@ -33,13 +31,9 @@ Be aware that you will have a limited amount of API calls since you are on the b
 
 Let's take a look at the data available to us via the API endpoints:
 
-{/* ![](/post/images//trades-post/trade-coinmarketcap-docs.png) */}
-
 <BlogImage src={TradeCoinmarketcapDocs} alt="Trade Coinmarketcap API" />
 
 For our purposes we are looking for the latest crypto prices per coin. This one looks good. We can confirm this in the section for that endpoint:
-
-{/* ![](/post/images//trades-post/trade-crypto-latest-endpoint.png) */}
 
 <BlogImage src={TradeCryptoLatestEndpoint} alt="Trade Coinmarketcap API" />
 
@@ -53,8 +47,6 @@ This shows us that for basic users we will get an array with the all the main da
 Let's move to Google Sheets and start making calls to the API. To do this we will use the Script Editor, under `Extensions` > `Apps Script`
 
 This will open the Apps Script page. Functions are created using normal javascript.
-
-{/* ![](/post/images//trades-post/trade-apps-script.png) */}
 
 <BlogImage src={TradeAppsScript} alt="Trade Coinmarketcap API" />
 
@@ -99,8 +91,6 @@ The script editor allows us to debug and check responses by adding a `Logger.log
 - Select the method to call, in this case `callAtomPrice` (explained below)
 - Click 'Run'
 - See the execution log shows the response, including the key bit of info we are interested in - the price. This is under `quote.USD.price`.
-
-{/* ![](/post/images//trades-post/trade-apps-scripts-debug.png) */}
 
 <BlogImage src={TradeAppsScriptDebug} alt="Trade Coinmarketcap API" />
 
@@ -199,7 +189,5 @@ function getGbpExchangeRate() {
 ### Step Eight - Give it a try!
 
 I added a bit of colour and now it's ready to go. In the spreadsheet, you will now see a menu when you reload, and the cells we specify in `.focusOnSheet()` will be populated. Then we can do whatever we want with this data!
-
-{/* ![](/post/images//trades-post/trade-atom-page.png) */}
 
 <BlogImage src={TradeAtomPage} alt="Trade Coinmarketcap API" />
