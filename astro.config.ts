@@ -9,7 +9,7 @@ import codeTitle from "remark-code-title";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://basicblog.pages.dev",
+  site: "https://elgrogz.github.io",
   markdown: {
     extendDefaultPlugins: true,
     shikiConfig: {
