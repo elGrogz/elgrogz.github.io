@@ -2,7 +2,9 @@
 import Layout from "@layouts/Layout.astro";
 import BlogCard from "@components/BlogCard.astro";
 import Subscribe from "@components/Subscribe.astro";
-import { Icon } from "astro-icon";
+// import { Icon } from "astro-icon";
+import GrogzProfilePic from "@images/profile-pic.png"
+import { Picture } from "@astrojs/image/components";
 
 interface Frontmatter {
   title: string;
@@ -21,8 +23,9 @@ blogs = blogs.sort((a, b) => new Date(b.frontmatter.pubDate).valueOf() - new Dat
 
 <Layout {...metadata}>
   <section class="flex flex-col sm:flex-row justify-evenly items-center py-14">
-    <div class="w-32 m-5 md:m-10 my-10">
-      <Icon name="simple-icons:astro" class="w-32 overflow-hidden inline-flex" />
+    <div class="w-50 m-5 md:m-10 my-10">
+      <!-- <Icon name="simple-icons:astro" class="w-32 overflow-hidden inline-flex" /> -->
+      <img src={"profile-pic.png"} alt="Grogz" class="rounded-xl"/>
     </div>
     <header class="max-w-xl sm:order-first">
       <h1 class="text-2xl sm:text-3xl font-bold mb-7 md:mb-5 text-center sm:text-left">Welcome to Grogz's blog</h1>
