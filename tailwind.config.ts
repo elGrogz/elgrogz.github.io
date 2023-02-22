@@ -66,6 +66,9 @@ module.exports = {
                 transitionDuration: "150ms",
               },
             },
+            "img:not(.dark)": {
+              borderColor: colors.black,
+            },
           },
         },
       },
