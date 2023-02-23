@@ -1,0 +1,106 @@
+---
+title: Using environmental variables with Sveltekit Apps
+description: "How to use environmental variables with Sveltekit Apps"
+pubDate: February 24, 2023
+---
+
+import BlogImage from "@components/BlogImage.astro";
+import EnvFile from "@images/sveltekit-envvar/env-file.png";
+import Console from "@images/sveltekit-envvar/console.png";
+
+Recently I was travelling and I wanted to spend some time working on my Svelte Cocktail app while on the train.
+Since I would have a bad internet connection I wanted to be able to use mocked API responses instead of real ones.
+
+I had a function that returned ingredients from the API, and within this I added a mocked response with the right response type and commented out the real code. All good:
+
+```js
+export const getIngredients = async (): Promise<Ingredient[] | null> => {
+  const ingredientsResponse = await getMockIngredients();
+  const ingredientsObject = JSON.parse(ingredientsResponse);
+
+  return ingredientsObject;
+
+  //   try {
+  //     console.log("Getting ingredients");
+
+  //     const ingredientsResponse = await fetch(
+  //       "https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list"
+  //     );
+  //     const ingredientsObject = await ingredientsResponse.json();
+  //     return ingredientsObject.drinks;
+  //   } catch (error) {
+  //     throw new Error("Error getting ingredients list");
+  //   }
+};
+```
+
+However, it's annoying to have to shift code about and comment/uncomment things as I go back to a normal internet connection.
+To make things more convenient I wanted to set the 'mode' I was in when starting the app.
+To do this I used environmental variables with Sveltekit, and it turn's out it's very easy to do. Here's how:
+
+### Creating a `.env` file
+
+The first step for declaring environmental variables in a Svelte app is to use a `.env` in the root of the project.
+Doing this is supported out of the box with Vite (the tooling that starts a Svelte app server).
+
+If we look at the [Sveltekit modules docs](https://kit.svelte.dev/docs/modules#$env-static-public), we can see that there are various options for setting Vite environmental variables.
+Usually the client code can't read environmental variables to prevent sensitive data to the user.
+However In my case I wanted the client app to be able to read this variable, so I made sure that the variable begins with `PUBLIC_`. It looks like this:
+
+<BlogImage src={EnvFile} alt=".env file created with PUBLIC_ variable" />
+
+### Setting up the API to read the environmental variable
+
+Now we can read the environmental variable.
+To check it's working, I added a console.log in the first line of the `getIngredients` to make sure it's picked up.
+Before that I had to import the environmental variable using the `$env.static.public` package from Vite. This allows the app to read any variables declared with `PUBLIC_` at the start of them.
+
+```js
+import { PUBLIC_MOCK } from '$env/static/public'; // import this line!
+
+export const getIngredients = async (): Promise<Ingredient[] | null> => {
+	console.log('ENV VAR: ', PUBLIC_MOCK); // checking the variable can be read.
+
+    // rest of function...
+```
+
+This function runs when the app starts, so I can check the console to see it's been picked up.
+
+<BlogImage src={Console} alt=".env file created with PUBLIC_ variable" />
+
+### Logic
+
+Now I just need to add some logic to import the mocked response if `PUBLIC_MOCK` is set to `true`:
+
+```js
+import type { Ingredient, Cocktail } from "../types/types";
+import {
+  getMockIngredients,
+  getMockCocktails,
+} from "../../tests/utils/mockResponses";
+
+import { PUBLIC_MOCK } from "$env/static/public";
+
+export const getIngredients = async (): Promise<Ingredient[] | null> => {
+  if (PUBLIC_MOCK === "true") {
+    const ingredientsResponse = await getMockIngredients();
+    const ingredientsObject = JSON.parse(ingredientsResponse);
+
+    return ingredientsObject;
+  }
+
+  try {
+    console.log("Getting ingredients");
+
+    const ingredientsResponse = await fetch(
+      "https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list"
+    );
+    const ingredientsObject = await ingredientsResponse.json();
+    return ingredientsObject.drinks;
+  } catch (error) {
+    throw new Error("Error getting ingredients list");
+  }
+};
+```
+
+Now I can set `PUBLIC_MOCK` to `false` and the API will try to fetch a response from the real API.
