@@ -8,7 +8,7 @@ import BlogImage from "@components/BlogImage.astro";
 import EnvFile from "@images/sveltekit-envvar/env-file.png";
 import Console from "@images/sveltekit-envvar/console.png";
 
-Recently I was travelling and I wanted to spend some time working on my Svelte Cocktail app while on the train.
+Recently I was travelling and I wanted to spend some time working on my wonderful Svelte Cocktail app while on the train.
 Since I would have a bad internet connection I wanted to be able to use mocked API responses instead of real ones.
 
 I had a function that returned ingredients from the API, and within this I added a mocked response with the right response type and commented out the real code. All good:
@@ -103,4 +103,4 @@ export const getIngredients = async (): Promise<Ingredient[] | null> => {
 };
 ```
 
-Now I can set `PUBLIC_MOCK` to `false` and the API will try to fetch a response from the real API.
+Now I can set `PUBLIC_MOCK` to `false` in the `.env` file and the API will try to fetch a response from the real API.
