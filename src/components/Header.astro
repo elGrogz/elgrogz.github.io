@@ -21,12 +21,17 @@ const desktop = [
       {
         desktop.map((item) => (
           <li>
-            <a href ={item.href} class="hover:bg-zinc-300 dark:hover:bg-zinc-700 dark:text-zinc-300 text-black p-2 transition-colors rounded-lg">
+            <a href={item.href} class="hover:bg-zinc-300 dark:hover:bg-zinc-700 dark:text-zinc-300 text-black p-2 transition-colors rounded-lg">
               {item.name}
             </a>
           </li>
         ))
-      }
+      } 
+    <button class="pointer ml-4">
+      <a href="https://github.com/elgrogz">
+        <Icon name="mdi:github" class="w-6 dark:text-white text-black transition-colors" />
+      </a>
+    </button>
     </ul>
     <button aria-label="theme toggle" class="pointer theme-toggle ml-4">
       <Icon name="eva:moon-outline" class="w-6 dark:text-white text-black transition-colors dark:hidden" />
