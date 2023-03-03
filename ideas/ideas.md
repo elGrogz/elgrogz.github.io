@@ -1,0 +1,5 @@
+- [ ] await in svelte
+- [ ] ! to generate html outline
+- [ ] Explain how a svelte app goes together
+- [ ] How to add a Google font to a svelte app
+- [ ] What does 'position' mean in CSS?

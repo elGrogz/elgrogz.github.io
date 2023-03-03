@@ -1,0 +1,50 @@
+---
+title: How Svelte lets you call APIs directly in HTML
+description: "How Svelte allows you to insert Await blocks in the HTML markup"
+pubDate: March 3, 2023
+---
+
+Svelte has lots of nice features to make a developer's life easier and their code more readable.
+One of my favourites so far are the [Await blocks](https://svelte.dev/tutorial/await-blocks) that allow you to call APIs or do other asynchronous actions directly in the HTML markup.
+
+For example, my previous code looked like this:
+
+```svelte
+<script>
+  export let ingredients: Ingredient[] | null;
+
+  onMount(async (): Promise<void> => {
+  	ingredients = await getIngredients(); // This is an async API call to fetch some data.
+  }
+
+  // more code here...
+</script>
+
+<IngredientList {ingredients}/>
+
+// more HTML here...
+```
+
+Here my code is declaring an empty list of `ingredients`, fetching the ingredient immediately after loading the component, and then passing the data to the `IngredientList` component so it can render it.
+This works well, but it's a bit boilerplatey with the `onMount` function, and I haven't handled the way the app looks when the data is loading or if something goes wrong.
+Svelte has a nicer way of doing this:
+
+```svelte
+// HTML here...
+
+{#await getIngredients()}
+	<p>Loading ingredients...</p>
+{:then ingredients}
+	<IngredientList {ingredients}/>
+{:catch error}
+	<p>{error}</p>
+{/await}
+
+// more HTML here...
+```
+
+Now we do all of the async fetching of the ingredients directly in the HTML of the component.
+With `{#await getIngredients()}` we are fetching the raw data, after that we use the `:then` statement to send that data to the component (just like a normal Javascript Promise).
+Finally we can add a `:catch` statement to handle any errors if they occur.
+
+The really cool thing about this pattern is you can easily set the HTML and styling to set when the API call is loading, or when there is an error!
