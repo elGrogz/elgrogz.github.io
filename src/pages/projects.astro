@@ -6,15 +6,15 @@ import Layout from "@layouts/Layout.astro";
 <Layout title="Posts">
   <section class="flex flex-col mt-8">
     <h1 class="text-2xl sm:text-3xl font-bold mb-5">Professional Projects</h1>
-    <Project title="Ledger Live" description="Software Development Engineer in Test working with Javascript/Typescript and using Playwright and Detox" githubUrl="https://github.com/LedgerHQ/ledger-live"/>
+    <Project title="Ledger Live" description="Software Development Engineer in Test working with Javascript/Typescript and using Playwright and Detox" githubUrl="https://github.com/LedgerHQ/ledger-live" technologyIconsPath={["../../public/icons8-javascript.png", "../../public/icons8-node-js.png", "../../public/icons8-react.png"]}/>
   </section>
   <section class="flex flex-col mt-8">
     <h1 class="text-2xl sm:text-3xl font-bold mb-5">Personal Projects</h1>
   </section>
   <section class="flex flex-col mt-8">
-    <Project title="Detox Doctor" description="A Node CLI tool that tells you what you need to have installed locally to be able to run E2E Detox tests for React Native apps" githubUrl="https://github.com/elGrogz/detox-doctor"/>
-    <Project title="Svelte Cocktails" description="A Svelte app using the Cocktail DB API to fetch a random cocktail based on the ingredients you have" githubUrl="https://github.com/elGrogz/svelte-cocktails" appUrl="https://svelte-cocktails.vercel.app"/>
-    <Project title="React Weather App" description="A small monorepo containing a React Native app and a React web app using the Open Weather DB API to fetch current and upcoming weather data for a location" githubUrl="https://github.com/elGrogz/react-weather-app"/>
-    <Project title="EU Travel Calculator" description="A React app to calculate how many days you can spend in the EU on a short term visa" githubUrl="https://github.com/elGrogz/single-page-eu-travel-calculator" appUrl="https://fervent-booth-71e47b.netlify.app/"/>
+    <Project title="Detox Doctor" description="A Node CLI tool that tells you what you need to have installed locally to be able to run E2E Detox tests for React Native apps" githubUrl="https://github.com/elGrogz/detox-doctor" technologyIconsPath={["../../public/icons8-javascript.png", "../../public/icons8-node-js.png"]}/>
+    <Project title="Svelte Cocktails" description="A Svelte app using the Cocktail DB API to fetch a random cocktail based on the ingredients you have" githubUrl="https://github.com/elGrogz/svelte-cocktails" appUrl="https://svelte-cocktails.vercel.app"  technologyIconsPath={["../../public/icons8-svelte.png", "../../public/icons8-node-js.png"]}/>
+    <Project title="React Weather App" description="A small monorepo containing a React Native app and a React web app using the Open Weather DB API to fetch current and upcoming weather data for a location" githubUrl="https://github.com/elGrogz/react-weather-app"  technologyIconsPath={["../../public/icons8-react.png", "../../public/icons8-node-js.png"]}/>
+    <Project title="EU Travel Calculator" description="A React app to calculate how many days you can spend in the EU on a short term visa" githubUrl="https://github.com/elGrogz/single-page-eu-travel-calculator" appUrl="https://fervent-booth-71e47b.netlify.app/" technologyIconsPath={["../../public/icons8-react.png", "../../public/icons8-node-js.png"]}/>
   </section>
 </Layout>

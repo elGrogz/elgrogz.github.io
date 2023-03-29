@@ -4,10 +4,10 @@ export interface Props {
   description: string;
   appUrl: string | undefined;
   githubUrl: string | undefined;
-  technologyIconsPath: string | undefined;
+  technologyIconsPath: string[] | undefined;
 }
 
-const { title, description, appUrl, githubUrl,technologyIconsPath } = Astro.props;
+const { title, description, appUrl, githubUrl, technologyIconsPath } = Astro.props;
 
 // let { title, description, pubDate, url } = Astro.props;
 // const shortDate = new Date(pubDate).toLocaleDateString("en", {
@@ -24,6 +24,11 @@ const { title, description, appUrl, githubUrl,technologyIconsPath } = Astro.prop
       <div class="flex flex-col text-right">
         {githubUrl ? <a href={githubUrl}>Github link</a> : null}
         {appUrl ? <a href={githubUrl}>App link</a> : null}
+        <div class="flex flex-row align">
+            {technologyIconsPath && technologyIconsPath.map((icon) => {
+              return <img src={icon} class="w-8 h-8"/>
+            })}
+        </div>
       </div>
     </div>
 
