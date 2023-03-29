@@ -19,12 +19,12 @@ const { title, description, appUrl, githubUrl, technologyIconsPath } = Astro.pro
 <div class="flex flex-col gap-2 sm:grid-cols-4 leading-relaxed rounded-2xl border-zinc-700 dark:text-zinc-400 mb-10">
     <h3 class="font-bold text-slate-800 dark:text-white">{title}</h3>
 
-    <div class="flex flex-row justify-between">
+    <div class="flex flex-row justify-between ">
       <p class="max-w-sm">{description}</p>
-      <div class="flex flex-col text-right">
-        {githubUrl ? <a href={githubUrl}>Github link</a> : null}
-        {appUrl ? <a href={githubUrl}>App link</a> : null}
-        <div class="flex flex-row align">
+      <div class="flex flex-col text-center">
+        {githubUrl ? <a class="underline hover:decoration-4 underline-offset-4" href={githubUrl}>Github link</a> : null}
+        {appUrl ? <a class="underline hover:decoration-4 underline-offset-4" href={githubUrl}>App link</a> : null}
+        <div class="flex flex-row justify-center mt-1">
             {technologyIconsPath && technologyIconsPath.map((icon) => {
               return <img src={icon} class="w-8 h-8"/>
             })}
